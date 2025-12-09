@@ -1,0 +1,394 @@
+.icon-FoxEditor-link:before {content: "\f0c1";}
+.icon-FoxEditor-unlink:before {content: "\f127";}
+.icon-FoxEditor-code:before {content: "\e802";}
+.icon-FoxEditor-cancel:before {content: "\00d7";}
+.icon-FoxEditor-terminal:before {content: "\e804";}
+.icon-FoxEditor-angle-down:before {content: "\e805";}
+.icon-FoxEditor-font:before {content: "\e806";}
+.icon-FoxEditor-bold:before {content: "\f032";}
+.icon-FoxEditor-italic:before {content: "\e808";}
+.icon-FoxEditor-header:before {content: "\e809";}
+.icon-FoxEditor-align-left:before {content: "\e80a";}
+.icon-FoxEditor-align-center:before {content: "\e80b";}
+.icon-FoxEditor-align-right:before {content: "\e80c";}
+.icon-FoxEditor-list-bullet:before {content: "\e80d";}
+.icon-FoxEditor-indent-left:before {content: "\e80e";}
+.icon-FoxEditor-indent-right:before {content: "\e80f";}
+.icon-FoxEditor-list-numbered:before {content: "\e810";}
+.icon-FoxEditor-underline:before {content: "\e811";}
+.icon-FoxEditor-table:before {content: "\e812";}
+.icon-FoxEditor-eraser:before {content: "\e813";}
+.icon-FoxEditor-text-height:before {content: "\e814";}
+.icon-FoxEditor-brush:before {content: "\e815";}
+.icon-FoxEditor-pencil:before {content: "\f040";}
+.icon-FoxEditor-minus:before {content: "\e817";}
+.icon-FoxEditor-picture:before {content: "\f03e";}
+.icon-FoxEditor-file-image:before {content: "\e819";}
+.icon-FoxEditor-cw:before {content: "\e81a";}
+.icon-FoxEditor-ccw:before {content: "\e81b";}
+.icon-FoxEditor-music:before {content: "\e911";}
+.icon-FoxEditor-play:before {content: "\f01d";}
+.icon-FoxEditor-location:before {content: "\e947";}
+.icon-FoxEditor-happy:before {content: "\f0f7";}
+.icon-FoxEditor-sigma:before {content: "\ea67";}
+.icon-FoxEditor-enlarge2:before {content: "\e98b";}
+.icon-FoxEditor-shrink2:before {content: "\e98c";}
+.icon-FoxEditor-newspaper:before{content: "\e904";}
+.icon-FoxEditor-camera:before{content: "\e90f";}
+.icon-FoxEditor-video-camera:before{content: "\e914";}
+.icon-FoxEditor-file-zip:before{content: "\e92b";}
+.icon-FoxEditor-stack:before{content: "\e92e";}
+.icon-FoxEditor-credit-card:before{content: "\e93f";}
+.icon-FoxEditor-address-book:before{content: "\e944";}
+.icon-FoxEditor-envelop:before{content: "\e945";}
+.icon-FoxEditor-drawer:before{content: "\e95c";}
+.icon-FoxEditor-download:before{content: "\e960";}
+.icon-FoxEditor-upload:before{content: "\e961";}
+.icon-FoxEditor-lock:before{content: "\e98f";}
+.icon-FoxEditor-unlocked:before{content: "\e990";}
+.icon-FoxEditor-wrench:before{content: "\e991";}
+.icon-FoxEditor-eye:before{content: "\e9ce";}
+.icon-FoxEditor-eye-blocked:before{content: "\e9d1";}
+.icon-FoxEditor-command:before{content: "\ea4e";}
+.icon-FoxEditor-font2:before{content: "\ea5c";}
+.icon-FoxEditor-libreoffice:before{content: "\eade";}
+.icon-FoxEditor-quotes-left:before{content: "\e977";}
+.icon-FoxEditor-strikethrough:before{content: "\ea65";}
+.FoxEditor-container .FoxEditor-drop-menu{
+	border: 1px\9 solid\9 #eeeeee\9;
+}
+.FoxEditor-container .FoxEditor-drop-panel{
+	border: 1px\9 solid\9 #eeeeee\9;
+}
+.FoxEditor-container .FoxEditor-modal{
+	border: 1px\9 solid\9 #eeeeee\9;
+}
+.FoxEditor-container {
+  position: relative;
+  border: 1px solid #cccccc;
+  background-color: #ffffff;
+  border-radius:4px;
+}
+.FoxEditor-container * {
+  margin: 0;
+  box-sizing: border-box;
+}
+.FoxEditor-container .clearfix:after {
+  content: '';
+  display: block;
+  clear: both;
+  height: 0;
+}
+.FoxEditor-container .clearfix {
+  *zoom: 1;
+  /*兼容IE低版本*/
+}
+.FoxEditor-container div[contenteditable=true]:focus {
+  outline: none;
+}
+.FoxEditor-container .FoxEditor-btn-container {
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+  background-color: #eee;
+  border-radius:4px;
+}
+.FoxEditor-container .FoxEditor-btn-container-group {
+  float: left;
+  padding: 0 5px;
+  border-right: 1px solid #eeeeee;  
+}
+.FoxEditor-fix{position:absolute;z-index:9999;}
+.FoxEditor-container .FoxEditor-btn-container-btn {
+  display: inline-block;
+  *display: inline;
+  *zoom: 1;
+  padding: 10px 10px;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 1.1em;
+  line-height: 1.4;
+  text-align: center;
+  margin-bottom: -2px;
+}
+.FoxEditor-container .FoxEditor-btn-container-btn:hover {
+  filter: alpha(opacity=100);
+  -moz-opacity: 1;
+  opacity: 1;
+}
+.FoxEditor-container .FoxEditor-btn-container-btn i {
+  display: block;
+  float: left;
+  font-size: 1em;
+  font-style: normal;
+}
+.FoxEditor-container .FoxEditor-btn-container-btn-default {
+  color: #333333;
+  filter: alpha(opacity=60);
+  -moz-opacity: 0.6;
+  opacity: 0.6;
+}
+.FoxEditor-container .FoxEditor-btn-container-btn-selected {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  filter: alpha(opacity=100);
+  -moz-opacity: 1;
+  opacity: 1;
+}
+.FoxEditor-container .drop-menu-style {
+  /*通用配置*/
+  list-style-type: none;
+  border-left: 1px solid #eeeeee;
+  background-color: #ffffff;
+  position: absolute;
+  margin-top: 35px;
+  padding-left: 0;
+  -webkit-padding-start: 0;
+  z-index: 10000;
+  -webkit-box-shadow: 1px 1px 3px #ccc;
+  -moz-box-shadow: 1px 1px 3px #ccc;
+  box-shadow: 1px 1px 3px #ccc;
+}
+.FoxEditor-container .FoxEditor-drop-menu {
+  /*通用配置*/
+  list-style-type: none !important;
+  border-left: 1px solid #eeeeee !important;
+  background-color: #ffffff !important;
+  position: absolute !important;
+  margin-top: 35px !important;
+  padding-left: 0 !important;
+  -webkit-padding-start: 0 !important;
+  z-index: 10000 !important;
+  -webkit-box-shadow: 1px 1px 3px #ccc !important;
+  -moz-box-shadow: 1px 1px 3px #ccc !important;
+  box-shadow: 1px 1px 3px #ccc !important;
+}
+.FoxEditor-container .FoxEditor-drop-menu a {
+  font-size: 0.9em;
+  line-height: 1.4;
+  text-align: center;
+  text-align: left;
+  display: block;
+  text-decoration: none;
+  color: #333333;
+  padding: 3px 10px;
+}
+.FoxEditor-container .FoxEditor-drop-menu a:hover {
+  background-color: #aec5e6;
+}
+.FoxEditor-container .FoxEditor-drop-panel {
+  width: 95%;
+  border-left: 1px solid #eeeeee;
+  background-color: #ffffff;
+  position: absolute;
+  left:10px;
+  margin-top: 35px;
+  padding: 5px 5px 0 0;
+  z-index: 10000;
+  -webkit-box-shadow: 1px 1px 3px #ccc;
+  -moz-box-shadow: 1px 1px 3px #ccc;
+  box-shadow: 1px 1px 3px #ccc;
+}
+.FoxEditor-container .FoxEditor-drop-panel .FoxEditor-drop-panel-floatItem {
+  float: left;
+  margin-left: 5px;
+  margin-bottom: 5px;
+  font-size: 0.9em;
+}
+.FoxEditor-container .FoxEditor-drop-panel .FoxEditor-drop-panel-floatItem a {
+  text-decoration: none;
+}
+.FoxEditor-container .FoxEditor-drop-panel .FoxEditor-drop-panel-floatItem .forColorItem {
+  display: block;
+  width: 18px;
+  border: 1px solid #cccccc;
+}
+.FoxEditor-container .FoxEditor-drop-panel .FoxEditor-drop-panel-floatItem img {
+  border: 0;
+  max-width: 70px;
+  max-height: 50px;
+}
+.FoxEditor-container .FoxEditor-drop-panel-big {
+  width: 280px;
+}
+.FoxEditor-container .FoxEditor-expression-tab-container {
+  padding-left: 10px;
+  padding-top: 2px;
+  padding-bottom: 6px;
+}
+.FoxEditor-container .FoxEditor-expression-tab-container .FoxEditor-expression-tab {
+  cursor: pointer;
+  float: left;
+  margin-right: 5px;
+  padding: 3px 5px;
+  font-size: 0.8em;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+.FoxEditor-container .FoxEditor-expression-tab-container .selected {
+  background-color: #dddddd;
+}
+.FoxEditor-container .FoxEditor-toolTip {
+  position: absolute;
+  margin-top: -22px;
+  display: none;
+}
+.FoxEditor-container .FoxEditor-toolTip-content {
+  font-size: 0.8em;
+  line-height: 1;
+  text-align: center;
+  background-color: #333333;
+  color: #ffffff;
+  padding: 5px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+.FoxEditor-container .FoxEditor-toolTip-content::after {
+  /*div下方的三角*/
+  content: "";
+  border: 5px solid;
+  border-color: #333333 transparent transparent transparent;
+  position: absolute;
+  right: 40%;
+  top: 100%;
+}
+.FoxEditor-container .FoxEditor-modal-container {
+  z-index: 15000;
+}
+.FoxEditor-container .FoxEditor-modal {
+  z-index: 10000;
+  width: 600px;
+  font-size: 0.9em;
+  line-height: 1.4;
+  text-align: center;
+  text-align: left;
+  border-top: 1px solid #cccccc;
+  background-color: #ffffff;
+  padding: 15px 20px 15px 20px;
+  position: absolute;
+  top: 50%;
+  display: none;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  color: #333333;
+  -webkit-box-shadow: 0 5px 15px #666;
+  -moz-box-shadow: 0 5px 15px #666;
+  box-shadow: 0 5px 15px #666;
+}
+.FoxEditor-container .FoxEditor-modal a{color:#FF0000;}
+.FoxEditor-container .FoxEditor-modal a:hover{color:#FF5511;}
+.FoxEditor-container .FoxEditor-modal-header {
+  text-align: left;
+}
+.FoxEditor-container .FoxEditor-modal-header-close {
+  display: block;
+  text-align: center;
+  float: right;
+  padding: 0 3px;
+  color: #333333;
+  text-decoration: none;
+  cursor: pointer;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  filter: alpha(opacity=60);
+  -moz-opacity: 0.6;
+  opacity: 0.6;
+}
+.FoxEditor-container .FoxEditor-modal-header-close:hover {
+  filter: alpha(opacity=100);
+  -moz-opacity: 1;
+  opacity: 1;
+}
+.FoxEditor-container .FoxEditor-modal-header-close i {
+  font-style: normal;
+}
+.FoxEditor-container .FoxEditor-modal-header-line {
+  border-top: 1px solid #cccccc;
+  margin: 5px 0 10px 0;
+  clear: both;
+}
+.FoxEditor-container .FoxEditor-modal p {
+  margin: 8px 0;
+}
+.FoxEditor-container .FoxEditor-modal a {
+  text-decoration: none;
+}
+.FoxEditor-container .FoxEditor-modal-btn {
+  color: #333333;
+  background-color: #fff;
+  border: 1px solid #cccccc;
+  padding: 4px 12px 4px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1.4;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+.FoxEditor-container .FoxEditor-modal-btn:hover {
+  background-color: #f1f1f1;
+}
+.FoxEditor-container .FoxEditor-modal input[type=text] {
+  border: 1px solid #999999;
+  padding: 5px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+.FoxEditor-container .FoxEditor-modal-big {
+  width: 500px;
+}
+.FoxEditor-container .FoxEditor-modal-small {
+  width: 300px;
+}
+.FoxEditor-container .FoxEditor-modal-mini {
+  width: 200px;
+}
+.FoxEditor-container .FoxEditor-textarea-container {
+  word-wrap: break-word;
+  overflow-y: auto;
+  background-color: #fff;
+}
+.FoxEditor-container .FoxEditor-textarea {
+  background-color: #ffffff;
+  padding: 10px 15px 10px 15px;
+}
+.FoxEditor-container .FoxEditor-textarea p {
+  margin: 0.7em 0;
+}
+.FoxEditor-container .FoxEditor-textarea ul {
+  margin-left: 20px;
+}
+.FoxEditor-container .FoxEditor-textarea ol {
+  margin-left: 20px;
+}
+.FoxEditor-container .FoxEditor-elemDeleteBtn {
+  text-align: center;
+  padding: 1px 5px 2px 5px;
+  color: #fff;
+  background-color: #333333;
+  text-decoration: none;
+  cursor: pointer;
+  position: absolute;
+  display: none;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+.FoxEditor-container .FoxEditor-elemDeleteBtn:hover {
+  color: #333333;
+  background-color: #aec5e6;
+}
+.FoxEditor-container .FoxEditor-imgResize {
+  position: absolute;
+  display: none;
+  cursor: se-resize;
+  width: 0;
+  height: 0;
+  border-bottom: 20px solid #333333;
+  border-left: 20px solid transparent;
+}

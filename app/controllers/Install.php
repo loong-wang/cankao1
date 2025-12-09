@@ -1,0 +1,391 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+#	FOX_HMCMS
+#	author :FoxBlue QQ:1183648628 lyoy2008@163.com
+#	Copyright (c) 2015 http://www.kuaiwww.com All rights reserved.
+#	classname:	Install
+#	scope:		PUBLIC
+
+class Install extends Install_Controller
+{
+	function __construct ()
+	{
+		parent::__construct();
+		$this->load->library('myclass');
+		$file=FCPATH.'install.lock';
+		if (file_exists($file)){
+			show_message('系统已安装过,请删除／intall.lock再重新安装',site_url());
+		}
+
+	}
+	public function index ()
+	{
+		$this->load->view('install_agreement');
+	}
+
+    /**
+     * 环境检测
+     */
+    public function check()
+    {
+        $do_next = true;
+        $environmentItems = $this->_getEnvironmentItems();
+        $lowestEnvironment = $this->_getLowestEnvironment();
+        $recommendEnvironment = $this->_getRecommendEnvironment();
+        $currentEnvironment = $this->_getCurrentEnvironment();
+
+        foreach ($environmentItems as $key => $value) {
+            $environment_item['name'] = $value;
+            $environment_item['lowest'] = $lowestEnvironment[$key];
+            $environment_item['recommend'] = $recommendEnvironment[$key];
+            $environment_item['current'] = $currentEnvironment[$key];
+            $environment_item['isok'] = $currentEnvironment[$key.'_isok'];
+            if (!$currentEnvironment[$key.'_isok']) {
+                $do_next = false;
+            }
+            $environment[] = $environment_item;
+        }
+
+        $filemod = $this->_getFileMOD();
+        foreach ($filemod as $item) {
+            if (!$item['mod']) {
+                $do_next = false;
+            }
+        }
+
+        $data['environment'] = $environment;
+        $data['filemod'] = $filemod;
+        $data['do_next'] = $do_next;
+        $this->load->view('install_check', $data);
+    }
+    /**
+     * 获取环境检测项目
+     *
+     * @return array
+     */
+    private function _getEnvironmentItems() {
+        return array(
+            'os' => '操作系统',
+            'php' => 'PHP版本',
+            'mysql' => 'Mysql版本（client）',
+            'gd' => 'GD图像库',
+            'upload' => '附件上传',
+            'space' => '磁盘空间'
+        );
+    }
+
+    /**
+     * 获取环境的最低配置要求
+     *
+     * @return array
+     */
+    private function _getLowestEnvironment() {
+        return array(
+            'os' => '不限制',
+            'php' => '5.1.6',
+            'mysql' => '4.1',
+            'gd' => '2.0',
+            'upload' => '不限制',
+            'space' => '50M'
+        );
+    }
+
+    /**
+     * 获取推荐的环境配置信息
+     *
+     * @return array
+     */
+    private function _getRecommendEnvironment() {
+        return array(
+            'os' => 'Linux',
+            'php' => '> 5.3.x',
+            'mysql' => '> 5.5.x',
+            'gd' => '> 2.0',
+            'upload' => '> 2M',
+            'space' => '> 200M'
+        );
+    }
+
+    /**
+     * 获得当前的环境信息
+     *
+     * @return array
+     */
+    private function _getCurrentEnvironment() {
+        $lowestEnvironment = $this->_getLowestEnvironment();
+        $mysql_isok = true;
+
+        if (function_exists('mysql_get_client_info')) {
+            $mysql = mysql_get_client_info();
+        } elseif (function_exists('mysqli_get_client_info')) {
+            $mysql = mysqli_get_client_info();
+        } else {
+            $mysql = 'unknow';
+            $mysql_isok = false;
+        }
+        if (function_exists('gd_info')) {
+            $gdinfo = gd_info();
+            $gd = $gdinfo['GD Version'];
+            $gd_isok = version_compare($lowestEnvironment['gd'], $gd) < 0 ? false : true;
+        } else {
+            $gd = 'unknow';
+            $gd_isok = false;
+        }
+        $upload = ini_get('file_uploads') ? ini_get('upload_max_filesize') : 'unknow';
+        $space = floor(@disk_free_space(FCPATH) / (1024 * 1024));
+        $space = $space ? $space . 'M': 'unknow';
+
+        return array(
+            'os' => PHP_OS,
+            'php' => phpversion(),
+            'mysql' => $mysql,
+            'gd' => $gd,
+            'upload' => $upload,
+            'space' => $space,
+
+            'os_isok' => true,
+            'php_isok' => version_compare(phpversion(), $lowestEnvironment['php']) < 0 ? false : true,
+            'mysql_isok' => $mysql_isok,
+            'gd_isok' => $gd_isok,
+            'upload_isok' => intval($upload) >= intval($lowestEnvironment['upload']) ? true : false,
+            'space_isok' => intval($space) >= intval($lowestEnvironment['space']) ? true : false
+        );
+    }
+
+    /**
+     * 检查目录权限
+     *
+     * @return array
+     */
+    private function _getFileMOD() {
+
+        $files_writeble[] = FCPATH . 'app/cache/';
+        $files_writeble[] = FCPATH . 'uploads/';
+        $files_writeble[] = FCPATH . 'app/config/database.php';
+        $files_writeble[] = FCPATH . 'data/db/foxcmsbt.sql';
+        
+        foreach ($files_writeble as $item) {
+            $fileMOD_item['mod'] =  is_really_writable($item);
+            $fileMOD_item['name'] = str_replace(FCPATH, '', $item);
+            $fileMOD_item['needmod'] =  '可写';
+            $fileMOD[] = $fileMOD_item;
+        }
+
+        return $fileMOD;
+    }
+    /**
+     * 安装过程
+     */
+    public function process()
+    {
+        $this->load->helper('form');
+		$this->load->library('form_validation');
+		$data['item']['dbhost']=($this->input->post ('dbhost'))?$this->input->post ('dbhost'):'127.0.0.1';
+		$data['item']['port']=($this->input->post ('port'))?$this->input->post ('port'):'3306';
+		$data['item']['dbprefix']=($this->input->post ('dbprefix'))?$this->input->post ('dbprefix'):'fox_';
+ 		$data['item']['username']=($this->input->post ('username'))?$this->input->post ('username'):'admin';
+		$data['item']['email']=($this->input->post ('email'))?$this->input->post ('email'):'lyoy2008@163.com';
+       if($_POST && $this->form_validation->run() === TRUE) {
+            $dbhost = $this->input->post('dbhost');
+            $dbuser = $this->input->post('dbuser');
+            $dbpsw = $this->input->post('dbpsw');
+            $dbname = $this->input->post('dbname');
+            $port =$this->input->post('port');
+            $dbprefix = $this->input->post('dbprefix');
+            $dbcreate = $this->input->post('dbcreate');
+
+            if ($dbcreate) {
+            $create_db = "CREATE DATABASE ".$dbname;
+            if (function_exists(@mysqli_connect)) {
+                    $create_con = mysqli_connect($dbhost, $dbuser, $dbpsw);
+                    mysqli_query($create_con, $create_db);
+                } else {
+                   $create_con = mysql_connect($dbhost.':'.$port,$dbuser,$dbpsw);
+                   mysql_query($create_db, $create_con);
+               }
+            }
+            if(function_exists(@mysqli_connect)){
+            	$mysqlie = 'mysql';
+	            $con=mysqli_connect($dbhost, $dbuser, $dbpsw, $dbname,$port);
+            } else {
+            	$mysqlie = 'mysql';
+				$con = mysql_connect($dbhost.':'.$dbport,$dbuser,$dbpsw);
+            }
+            //检查数据库信息是否正确
+            if (!$con) {
+                $string='
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+                <script>
+                alert("无法访问数据库，请重新安装！");
+                top.location="'.site_url('install').'";
+                </script>
+                ';
+                exit($string);
+            }
+
+            //写入数据库配置文件
+            $this->_writeDBConfig($dbhost, $dbuser, $dbpsw, $dbname, $port,$dbprefix,$mysqlie);
+
+            //创建数据表
+            $this->_createTables($dbhost, $dbuser, $dbpsw, $dbname, $port, $dbprefix,$con);
+            
+            //写入config文件
+            $sub_folder=$this->input->post('base_url');
+            if($sub_folder){
+				$this->config->update('webset','sub_folder', $sub_folder);
+			}
+			$encryption_key = md5(uniqid());
+			if($encryption_key){
+				$this->config->update('webset','encryption_key', $encryption_key);
+			}
+			sleep(3);
+            $this->load->view('install_setadmin',$data);
+        }else{
+	        $this->load->view('install_process',$data);
+        }
+        
+    }
+	
+	/**
+     * 安装过程
+     */
+    public function setadmin()
+    {
+        $this->load->helper('form');
+		$this->load->library('form_validation');
+		$data['item']['username']=($this->input->post ('username'))?$this->input->post ('username'):'admin';
+		$data['item']['email']=($this->input->post ('email'))?$this->input->post ('email'):'lyoy2008@163.com';
+        if($_POST && $this->form_validation->run() === TRUE) {
+			$salt =get_salt();
+            $getpassword= $this->input->post('password',true);
+			$password= password_dohash($getpassword,$salt);
+            $this->config->load('userset');//用户积分
+            $admin = array(
+                'username' => $this->input->post('username'),
+                'upassword' => $password,
+                'salt' => $salt,
+                'uemail' =>$this->input->post('email'),
+                'ucredit' => $this->config->item('credit_start'),
+                'uregip' => get_onlineip(),
+            	'ugroup'=> 19,
+            	'utype'=>19,
+            	'ucity'=>0,
+                'uregtime' => time(),
+                'ulogtime' => time(),
+                'ulock'=>0,
+            );
+            //添加管理员
+            $this->load->model('user_m');
+            $this->load->database();
+            $this->user_m->register($admin);
+
+            $this->user_m->login($admin);
+			
+			//创建禁止安装的文件
+            file_put_contents(FCPATH.'install.lock', time());
+
+            $this->load->view('install_done');
+        }else{
+	        $this->load->view('install_setadmin',$data);
+        }
+        
+    }
+
+    /**
+     * 写入数据库配置文件
+     */
+    private function _writeDBConfig($dbhost, $dbuser, $dbpsw, $dbname, $port,$dbprefix,$mysqlie)
+    {
+        $config = "<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');".PHP_EOL.PHP_EOL;
+        $config .= "\$active_group = 'default';".PHP_EOL;
+        $config .= "\$query_builder = TRUE;".PHP_EOL.PHP_EOL;
+
+        $config .= "\$db['default'] = array(".PHP_EOL;
+        $config .= "'dsn'	=> '',".PHP_EOL;
+		$config .= "'hostname' => '".$dbhost."',".PHP_EOL;
+        $config .= "'port' => '".$port."',".PHP_EOL;
+        $config .= "'username' => '".$dbuser."',".PHP_EOL;
+        $config .= "'password' => '".$dbpsw."',".PHP_EOL;
+        $config .= "'database' => '".$dbname."',".PHP_EOL;
+        $config .= "'dbdriver' => '".$mysqlie."',".PHP_EOL;
+        $config .= "'dbprefix' => '".$dbprefix."',".PHP_EOL;
+        $config .= "'pconnect' => FALSE,".PHP_EOL;
+        $config .= "'db_debug' => (ENVIRONMENT !== 'production'),".PHP_EOL;
+        $config .= "'cache_on' => FALSE,".PHP_EOL;
+        $config .= "'cachedir' => '',".PHP_EOL;
+        $config .= "'char_set' => 'utf8',".PHP_EOL;
+        $config .= "'dbcollat' => 'utf8_general_ci',".PHP_EOL;
+        $config .= "'swap_pre' => '',".PHP_EOL;
+        $config .= "'encrypt' => FALSE,".PHP_EOL;
+        $config .= "'compress' => FALSE,".PHP_EOL;
+        $config .= "'stricton' => FALSE,".PHP_EOL;
+        $config .= "'failover' => array(),".PHP_EOL;
+        $config .= "'save_queries' => TRUE".PHP_EOL;
+        $config .= ");";
+
+        // 保存配置文件
+        if (!file_put_contents(FCPATH.'app/config/database.php', $config)) {
+            $string='
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+            <script>
+            alert("数据库配置文件保存失败，请检查文件app/config/database.php权限！");
+            top.location="'.site_url('install').'";
+            </script>
+            ';
+            exit($string);
+        }
+    }
+
+    /**
+     * 导入数据表
+     */
+    private function _createTables($dbhost, $dbuser, $dbpsw, $dbname, $port,$dbprefix,$con)
+    {
+        $sql = file_get_contents(FCPATH.'data/db/foxcmsbt.sql'); 
+        $sql = str_replace('fox_', $dbprefix, $sql);
+        if(function_exists(@mysqli_multi_query)){
+	        $query=mysqli_multi_query($con,$sql);
+        }else{
+			$explode = explode(";",$sql);
+		 	foreach ($explode as $key=>$value){
+		    	if(!empty($value)){
+		    		if(trim($value)){
+			    		@mysql_query($value.";");
+		    		}
+		    	}
+		  	}
+        }
+        if (!$query) {
+            $string='
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+            <script>
+            alert("创建数据表失败，请重试式！");
+            top.location="'.site_url('install').'";
+            </script>
+            ';
+            exit($string);
+        }
+    }
+
+    /**
+     * 测试数据库连接
+     */
+    public function testdb($dbhost='host', $dbuser='user', $dbpsw='psw', $dbname='name',$port='3306')
+    {
+        $con = @mysql_connect($dbhost.':'.$dbport,$dbuser,$dbpsw);
+		$con = @mysql_select_db($dbname,$con);
+		$code = mysql_errno();
+		
+        $result = array(
+            'code' => $code,
+            'msg' => "数据库连接失败，请重新输入数据库信息！",
+        );
+        if ($con) {
+            $result['code'] = 200;
+            $result['msg'] = "数据库连接成功！";
+        }else{
+			$result['code'] = 1049;
+            $result['msg'] = "数据库连接失败！";
+		}
+        echo json_encode($result);
+    }
+}
